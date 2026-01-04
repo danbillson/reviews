@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import type { EntryStatus } from "@/db/app-schema";
 import { db } from "@/db/client";
 import { mediaItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
@@ -31,6 +32,22 @@ function getMediaTypeColor(slug: string): string {
   }
   return MEDIA_TYPE_COLORS[Math.abs(hash) % MEDIA_TYPE_COLORS.length] || "";
 }
+
+// Status badge colors matching the status badge component
+const STATUS_COLORS: Record<EntryStatus, string> = {
+  planned: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  started: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  finished:
+    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  dropped: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+};
+
+const STATUS_LABELS: Record<EntryStatus, string> = {
+  planned: "Planned",
+  started: "In Progress",
+  finished: "Finished",
+  dropped: "Dropped",
+};
 
 export default async function LibraryPage() {
   const session = await auth.api.getSession({
@@ -100,42 +117,63 @@ export default async function LibraryPage() {
             {inProgressItems.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-xl font-semibold mb-4">In Progress</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {inProgressItems.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/items/${item.id}`}
-                      className="group block"
-                    >
-                      <div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2 shadow-sm">
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt=""
-                            className="w-full h-full object-fit"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
-                            {item.title}
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-xs">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "border-0 text-xs",
-                            getMediaTypeColor(item.type.slug),
+                <div className="space-y-1">
+                  {inProgressItems.map((item) => {
+                    const entry = item.entries[0];
+                    return (
+                      <Link
+                        key={item.id}
+                        href={`/items/${item.id}`}
+                        className="group flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="w-12 h-16 sm:w-16 sm:h-24 bg-muted overflow-hidden shrink-0 shadow-sm">
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-1 text-center">
+                              {item.title}
+                            </div>
                           )}
-                        >
-                          {item.type.name}
-                        </Badge>
-                      </div>
-                    </Link>
-                  ))}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-base group-hover:text-primary transition-colors truncate">
+                            {item.title}
+                          </h3>
+                          {item.subtitle && (
+                            <p className="text-sm text-muted-foreground truncate">
+                              {item.subtitle}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {entry && (
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "border-0 text-xs",
+                                  STATUS_COLORS[entry.status],
+                                )}
+                              >
+                                {STATUS_LABELS[entry.status]}
+                              </Badge>
+                            )}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "border-0 text-xs",
+                                getMediaTypeColor(item.type.slug),
+                              )}
+                            >
+                              {item.type.name}
+                            </Badge>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -145,42 +183,63 @@ export default async function LibraryPage() {
                 {inProgressItems.length > 0 && (
                   <h3 className="text-xl font-semibold mb-4">All Items</h3>
                 )}
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                  {otherItems.map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/items/${item.id}`}
-                      className="group block"
-                    >
-                      <div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2 shadow-sm">
-                        {item.imageUrl ? (
-                          <img
-                            src={item.imageUrl}
-                            alt=""
-                            className="w-full h-full object-fit"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
-                            {item.title}
-                          </div>
-                        )}
-                      </div>
-                      <h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
-                        {item.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-xs">
-                        <Badge
-                          variant="outline"
-                          className={cn(
-                            "border-0 text-xs",
-                            getMediaTypeColor(item.type.slug),
+                <div className="space-y-1">
+                  {otherItems.map((item) => {
+                    const entry = item.entries[0];
+                    return (
+                      <Link
+                        key={item.id}
+                        href={`/items/${item.id}`}
+                        className="group flex items-center gap-4 p-3 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="w-12 h-16 sm:w-16 sm:h-24 bg-muted overflow-hidden shrink-0 shadow-sm">
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt=""
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-1 text-center">
+                              {item.title}
+                            </div>
                           )}
-                        >
-                          {item.type.name}
-                        </Badge>
-                      </div>
-                    </Link>
-                  ))}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-medium text-base group-hover:text-primary transition-colors truncate">
+                            {item.title}
+                          </h3>
+                          {item.subtitle && (
+                            <p className="text-sm text-muted-foreground truncate">
+                              {item.subtitle}
+                            </p>
+                          )}
+                          <div className="flex items-center gap-2 mt-2 flex-wrap">
+                            {entry && (
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "border-0 text-xs",
+                                  STATUS_COLORS[entry.status],
+                                )}
+                              >
+                                {STATUS_LABELS[entry.status]}
+                              </Badge>
+                            )}
+                            <Badge
+                              variant="outline"
+                              className={cn(
+                                "border-0 text-xs",
+                                getMediaTypeColor(item.type.slug),
+                              )}
+                            >
+                              {item.type.name}
+                            </Badge>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -43,10 +43,7 @@ export function AddNoteForm({ itemId }: AddNoteFormProps) {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-3 p-4 border rounded-lg bg-card"
-    >
+    <form onSubmit={handleSubmit} className="space-y-3 p-4 border bg-card">
       <Textarea
         value={body}
         onChange={(e) => setBody(e.target.value)}

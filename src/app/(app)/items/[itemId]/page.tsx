@@ -8,6 +8,7 @@ import { mediaItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { AddNoteForm } from "./add-note-form";
 import { NoteCard } from "./note-card";
+import { StatusDropdown } from "./status-dropdown";
 
 export default async function ItemDetailPage({
   params,
@@ -28,6 +29,10 @@ export default async function ItemDetailPage({
       type: true,
       notes: {
         orderBy: (n, { desc }) => [desc(n.createdAt)],
+      },
+      entries: {
+        orderBy: (e, { desc }) => [desc(e.createdAt)],
+        limit: 1,
       },
     },
   });
@@ -62,6 +67,13 @@ export default async function ItemDetailPage({
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2 mb-2">
               <Badge variant="secondary">{item.type.name}</Badge>
+              {item.entries[0] && (
+                <StatusDropdown
+                  entryId={item.entries[0].id}
+                  itemId={item.id}
+                  currentStatus={item.entries[0].status}
+                />
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold mb-1">
               {item.title}
