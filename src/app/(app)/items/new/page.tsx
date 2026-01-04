@@ -1,8 +1,8 @@
-import { auth } from "@/lib/auth";
-import { db } from "@/db/client";
-import { mediaType } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
+import { db } from "@/db/client";
+import { mediaType } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { NewItemForm } from "./new-item-form";
 
 export default async function NewItemPage() {

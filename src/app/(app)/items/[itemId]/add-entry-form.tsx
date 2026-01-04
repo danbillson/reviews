@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
-import { createEntry } from "./actions";
 import type { EntryStatus } from "@/db/app-schema";
+import { createEntry } from "./actions";
 
 const STATUSES: { value: EntryStatus; label: string }[] = [
   { value: "planned", label: "Plan to consume" },

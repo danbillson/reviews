@@ -1,7 +1,7 @@
 import type {
   MediaProvider,
-  ProviderSearchResult,
   ProviderItemDetails,
+  ProviderSearchResult,
 } from "./types";
 import { registerProvider } from "./types";
 

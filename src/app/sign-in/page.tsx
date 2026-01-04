@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { signIn } from "@/lib/auth-client";
 
 export default function SignInPage() {
   const handleGitHubSignIn = async () => {

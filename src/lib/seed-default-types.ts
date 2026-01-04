@@ -1,7 +1,7 @@
-import { db } from "@/db/client";
-import { mediaType } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
+import { db } from "@/db/client";
+import { mediaType } from "@/db/schema";
 
 const DEFAULT_TYPES = [
   { name: "Books", slug: "books", providerKey: "openlibrary" },

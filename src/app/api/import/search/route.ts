@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { db } from "@/db/client";
-import { mediaType } from "@/db/schema";
-import { getProvider } from "@/lib/providers";
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
+import { db } from "@/db/client";
+import { mediaType } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { getProvider } from "@/lib/providers";
 
 export async function GET(request: Request) {
   // Verify authentication
