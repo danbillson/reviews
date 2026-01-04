@@ -2,20 +2,22 @@
 
 import { Badge } from "@/components/ui/badge";
 import type { EntryStatus } from "@/db/app-schema";
-import { cn } from "@/lib/utils";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bookmark02Icon,
+  PlayIcon,
+  Tick02Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 
-const STATUS_COLORS: Record<EntryStatus, string> = {
-  planned: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  started: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  finished: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  dropped: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-};
-
-const STATUS_LABELS: Record<EntryStatus, string> = {
-  planned: "Planned",
-  started: "In Progress",
-  finished: "Finished",
-  dropped: "Dropped",
+const STATUS_CONFIG: Record<
+  EntryStatus,
+  { icon: typeof Bookmark02Icon; label: string }
+> = {
+  planned: { icon: Bookmark02Icon, label: "Planned" },
+  started: { icon: PlayIcon, label: "In Progress" },
+  finished: { icon: Tick02Icon, label: "Finished" },
+  dropped: { icon: Cancel01Icon, label: "Dropped" },
 };
 
 interface StatusBadgeProps {
@@ -24,16 +26,15 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const config = STATUS_CONFIG[status];
   return (
     <Badge
-      variant="outline"
-      className={cn(
-        "border-0 capitalize",
-        STATUS_COLORS[status],
-        className,
-      )}
+      variant="secondary"
+      className={className}
+      data-icon="inline-start"
     >
-      {STATUS_LABELS[status]}
+      <HugeiconsIcon icon={config.icon} strokeWidth={2} />
+      {config.label}
     </Badge>
   );
 }

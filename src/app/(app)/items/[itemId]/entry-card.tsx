@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { EntryStatus } from "@/db/app-schema";
 import { deleteEntry, updateEntry } from "./actions";
+import { StatusBadge } from "./status-badge";
 
 interface Entry {
   id: string;
@@ -90,9 +91,7 @@ export function EntryCard({ entry, itemId }: { entry: Entry; itemId: string }) {
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Badge variant="outline" className="capitalize">
-                {entry.status}
-              </Badge>
+              <StatusBadge status={entry.status} />
               {entry.recommend !== null && (
                 <Badge variant={entry.recommend ? "default" : "secondary"}>
                   {entry.recommend ? "Recommended" : "Not recommended"}

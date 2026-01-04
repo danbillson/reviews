@@ -6,9 +6,29 @@ import { Badge } from "@/components/ui/badge";
 import { db } from "@/db/client";
 import { mediaItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Book01Icon,
+  Film01Icon,
+  Tv01Icon,
+  MusicNote01Icon,
+  GameIcon,
+} from "@hugeicons/core-free-icons";
 import { AddNoteForm } from "./add-note-form";
 import { NoteCard } from "./note-card";
 import { StatusDropdown } from "./status-dropdown";
+
+// Media type icons mapping
+const MEDIA_TYPE_ICONS: Record<string, typeof Book01Icon> = {
+  books: Book01Icon,
+  movies: Film01Icon,
+  "tv-shows": Tv01Icon,
+  music: MusicNote01Icon,
+  games: GameIcon,
+};
+
+// Default icon for unknown media types
+const DEFAULT_MEDIA_ICON = Book01Icon;
 
 export default async function ItemDetailPage({
   params,
@@ -66,7 +86,19 @@ export default async function ItemDetailPage({
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-start gap-2 mb-2">
-              <Badge variant="secondary">{item.type.name}</Badge>
+              <Badge
+                variant="secondary"
+                className="text-xs"
+                data-icon="inline-start"
+              >
+                <HugeiconsIcon
+                  icon={
+                    MEDIA_TYPE_ICONS[item.type.slug] || DEFAULT_MEDIA_ICON
+                  }
+                  strokeWidth={2}
+                />
+                {item.type.name}
+              </Badge>
               {item.entries[0] && (
                 <StatusDropdown
                   entryId={item.entries[0].id}

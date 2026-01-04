@@ -9,15 +9,28 @@ import {
 } from "@/components/ui/select";
 import type { EntryStatus } from "@/db/app-schema";
 import { cn } from "@/lib/utils";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bookmark02Icon,
+  PlayIcon,
+  Tick02Icon,
+  Cancel01Icon,
+  ArrowDown01Icon,
+} from "@hugeicons/core-free-icons";
 import { updateEntry } from "./actions";
 import { StatusBadge } from "./status-badge";
 
-const STATUSES: { value: EntryStatus; label: string }[] = [
-  { value: "planned", label: "Planned" },
-  { value: "started", label: "In Progress" },
-  { value: "finished", label: "Finished" },
-  { value: "dropped", label: "Dropped" },
-];
+const STATUS_CONFIG: Record<
+  EntryStatus,
+  { icon: typeof Bookmark02Icon; label: string }
+> = {
+  planned: { icon: Bookmark02Icon, label: "Planned" },
+  started: { icon: PlayIcon, label: "In Progress" },
+  finished: { icon: Tick02Icon, label: "Finished" },
+  dropped: { icon: Cancel01Icon, label: "Dropped" },
+};
+
+const STATUSES: EntryStatus[] = ["planned", "started", "finished", "dropped"];
 
 interface StatusDropdownProps {
   entryId: string;
@@ -54,19 +67,39 @@ export function StatusDropdown({
       <SelectTrigger
         className={cn(
           "h-auto p-0 border-0 shadow-none bg-transparent hover:bg-transparent",
-          "focus-visible:ring-0 focus-visible:ring-offset-0 w-auto gap-1",
+          "focus-visible:ring-0 focus-visible:ring-offset-0 w-auto",
           "data-[placeholder]:text-foreground cursor-pointer",
-          "[&_svg]:hidden", // Hide the dropdown icon
+          "[&>*:last-child]:hidden", // Hide the default dropdown icon
         )}
       >
-        <StatusBadge status={currentStatus} />
+        <div className="inline-flex items-center gap-1.5 h-5 px-2 py-0.5 bg-secondary text-secondary-foreground rounded-none border border-transparent text-xs font-medium">
+          <div className="flex items-center gap-1">
+            <HugeiconsIcon
+              icon={STATUS_CONFIG[currentStatus].icon}
+              strokeWidth={2}
+              className="size-3 pointer-events-none"
+            />
+            <span>{STATUS_CONFIG[currentStatus].label}</span>
+          </div>
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
+            strokeWidth={2}
+            className="size-3 shrink-0 pointer-events-none"
+          />
+        </div>
       </SelectTrigger>
       <SelectContent>
-        {STATUSES.map((status) => (
-          <SelectItem key={status.value} value={status.value}>
-            {status.label}
-          </SelectItem>
-        ))}
+        {STATUSES.map((status) => {
+          const config = STATUS_CONFIG[status];
+          return (
+            <SelectItem key={status} value={status}>
+              <div className="flex items-center gap-2">
+                <HugeiconsIcon icon={config.icon} strokeWidth={2} />
+                {config.label}
+              </div>
+            </SelectItem>
+          );
+        })}
       </SelectContent>
     </Select>
   );

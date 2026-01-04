@@ -1,3 +1,15 @@
+import {
+  Book01Icon,
+  Bookmark02Icon,
+  Cancel01Icon,
+  Film01Icon,
+  GameIcon,
+  MusicNote01Icon,
+  PlayIcon,
+  Tick02Icon,
+  Tv01Icon,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -7,47 +19,30 @@ import type { EntryStatus } from "@/db/app-schema";
 import { db } from "@/db/client";
 import { mediaItem } from "@/db/schema";
 import { auth } from "@/lib/auth";
-import { cn } from "@/lib/utils";
 import { SignOutButton } from "./sign-out-button";
 
-// Color palette for media type badges
-const MEDIA_TYPE_COLORS = [
-  "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
-  "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
-  "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  "bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
-  "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
-  "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
-] as const;
-
-// Get a consistent color for a media type based on its slug
-function getMediaTypeColor(slug: string): string {
-  let hash = 0;
-  for (let i = 0; i < slug.length; i++) {
-    hash = ((hash << 5) - hash + slug.charCodeAt(i)) & 0xffffffff;
-  }
-  return MEDIA_TYPE_COLORS[Math.abs(hash) % MEDIA_TYPE_COLORS.length] || "";
-}
-
-// Status badge colors matching the status badge component
-const STATUS_COLORS: Record<EntryStatus, string> = {
-  planned: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-  started: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  finished:
-    "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
-  dropped: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+// Status badge icons and labels
+const STATUS_CONFIG: Record<
+  EntryStatus,
+  { icon: typeof Bookmark02Icon; label: string }
+> = {
+  planned: { icon: Bookmark02Icon, label: "Planned" },
+  started: { icon: PlayIcon, label: "In Progress" },
+  finished: { icon: Tick02Icon, label: "Finished" },
+  dropped: { icon: Cancel01Icon, label: "Dropped" },
 };
 
-const STATUS_LABELS: Record<EntryStatus, string> = {
-  planned: "Planned",
-  started: "In Progress",
-  finished: "Finished",
-  dropped: "Dropped",
+// Media type icons mapping
+const MEDIA_TYPE_ICONS: Record<string, typeof Book01Icon> = {
+  books: Book01Icon,
+  movies: Film01Icon,
+  "tv-shows": Tv01Icon,
+  music: MusicNote01Icon,
+  games: GameIcon,
 };
+
+// Default icon for unknown media types
+const DEFAULT_MEDIA_ICON = Book01Icon;
 
 export default async function LibraryPage() {
   const session = await auth.api.getSession({
@@ -151,22 +146,29 @@ export default async function LibraryPage() {
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {entry && (
                               <Badge
-                                variant="outline"
-                                className={cn(
-                                  "border-0 text-xs",
-                                  STATUS_COLORS[entry.status],
-                                )}
+                                variant="secondary"
+                                className="text-xs"
+                                data-icon="inline-start"
                               >
-                                {STATUS_LABELS[entry.status]}
+                                <HugeiconsIcon
+                                  icon={STATUS_CONFIG[entry.status].icon}
+                                  strokeWidth={2}
+                                />
+                                {STATUS_CONFIG[entry.status].label}
                               </Badge>
                             )}
                             <Badge
-                              variant="outline"
-                              className={cn(
-                                "border-0 text-xs",
-                                getMediaTypeColor(item.type.slug),
-                              )}
+                              variant="secondary"
+                              className="text-xs"
+                              data-icon="inline-start"
                             >
+                              <HugeiconsIcon
+                                icon={
+                                  MEDIA_TYPE_ICONS[item.type.slug] ||
+                                  DEFAULT_MEDIA_ICON
+                                }
+                                strokeWidth={2}
+                              />
                               {item.type.name}
                             </Badge>
                           </div>
@@ -217,22 +219,29 @@ export default async function LibraryPage() {
                           <div className="flex items-center gap-2 mt-2 flex-wrap">
                             {entry && (
                               <Badge
-                                variant="outline"
-                                className={cn(
-                                  "border-0 text-xs",
-                                  STATUS_COLORS[entry.status],
-                                )}
+                                variant="secondary"
+                                className="text-xs"
+                                data-icon="inline-start"
                               >
-                                {STATUS_LABELS[entry.status]}
+                                <HugeiconsIcon
+                                  icon={STATUS_CONFIG[entry.status].icon}
+                                  strokeWidth={2}
+                                />
+                                {STATUS_CONFIG[entry.status].label}
                               </Badge>
                             )}
                             <Badge
-                              variant="outline"
-                              className={cn(
-                                "border-0 text-xs",
-                                getMediaTypeColor(item.type.slug),
-                              )}
+                              variant="secondary"
+                              className="text-xs"
+                              data-icon="inline-start"
                             >
+                              <HugeiconsIcon
+                                icon={
+                                  MEDIA_TYPE_ICONS[item.type.slug] ||
+                                  DEFAULT_MEDIA_ICON
+                                }
+                                strokeWidth={2}
+                              />
                               {item.type.name}
                             </Badge>
                           </div>
