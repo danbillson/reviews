@@ -2,12 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { importItem, createManualItem } from "./actions";
 import type { ProviderSearchResult } from "@/lib/providers/types";
+import { createManualItem, importItem } from "./actions";
 
 interface MediaType {
   id: string;
@@ -198,7 +198,7 @@ export function NewItemForm({ types }: NewItemFormProps) {
                       <img
                         src={result.imageUrl}
                         alt=""
-                        className="w-16 h-24 object-cover rounded flex-shrink-0"
+                        className="w-16 h-24 object-fit flex-shrink-0"
                       />
                     )}
                     <div className="flex-1 min-w-0">

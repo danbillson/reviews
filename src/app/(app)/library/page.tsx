@@ -1,13 +1,13 @@
-import { auth } from "@/lib/auth";
-import { db } from "@/db/client";
-import { mediaItem, entry } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { SignOutButton } from "./sign-out-button";
+import { Button } from "@/components/ui/button";
+import { db } from "@/db/client";
+import { mediaItem } from "@/db/schema";
+import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { SignOutButton } from "./sign-out-button";
 
 // Color palette for media type badges
 const MEDIA_TYPE_COLORS = [
@@ -112,7 +112,7 @@ export default async function LibraryPage() {
                           <img
                             src={item.imageUrl}
                             alt=""
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-fit"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
@@ -157,7 +157,7 @@ export default async function LibraryPage() {
                           <img
                             src={item.imageUrl}
                             alt=""
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-fit"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">

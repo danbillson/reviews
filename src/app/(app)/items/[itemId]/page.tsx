@@ -1,11 +1,11 @@
-import { auth } from "@/lib/auth";
+import { and, eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import { db } from "@/db/client";
 import { mediaItem } from "@/db/schema";
-import { eq, and, desc } from "drizzle-orm";
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
+import { auth } from "@/lib/auth";
 import { AddNoteForm } from "./add-note-form";
 import { NoteCard } from "./note-card";
 
@@ -56,7 +56,7 @@ export default async function ItemDetailPage({
             <img
               src={item.imageUrl}
               alt=""
-              className="w-32 sm:w-40 h-auto object-cover rounded-lg flex-shrink-0"
+              className="w-32 sm:w-40 h-auto object-fit flex-shrink-0"
             />
           )}
           <div className="flex-1 min-w-0">
