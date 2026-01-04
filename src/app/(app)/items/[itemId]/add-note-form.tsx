@@ -3,31 +3,18 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createNote } from "./actions";
-
-interface Entry {
-	id: string;
-	status: string;
-	createdAt: Date;
-}
-
-interface Segment {
-	id: string;
-	orderIndex: number;
-	title: string | null;
-}
 
 interface AddNoteFormProps {
 	itemId: string;
-	entries: Entry[];
-	segments: Segment[];
 }
 
-export function AddNoteForm({ itemId, entries, segments }: AddNoteFormProps) {
+export function AddNoteForm({ itemId }: AddNoteFormProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [body, setBody] = useState("");
-	const [entryId, setEntryId] = useState<string>("");
-	const [segmentId, setSegmentId] = useState<string>("");
+	const [tag, setTag] = useState("");
 	const [isPending, startTransition] = useTransition();
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -37,14 +24,12 @@ export function AddNoteForm({ itemId, entries, segments }: AddNoteFormProps) {
 		const formData = new FormData();
 		formData.set("itemId", itemId);
 		formData.set("body", body);
-		if (entryId) formData.set("entryId", entryId);
-		if (segmentId) formData.set("segmentId", segmentId);
+		if (tag.trim()) formData.set("tag", tag.trim());
 
 		startTransition(() => {
 			createNote(formData);
 			setBody("");
-			setEntryId("");
-			setSegmentId("");
+			setTag("");
 			setIsOpen(false);
 		});
 	};
@@ -67,48 +52,17 @@ export function AddNoteForm({ itemId, entries, segments }: AddNoteFormProps) {
 				autoFocus
 			/>
 
-			<div className="flex flex-wrap gap-4 text-sm">
-				{entries.length > 0 && (
-					<div className="flex items-center gap-2">
-						<label htmlFor="note-entry" className="text-muted-foreground">
-							Entry:
-						</label>
-						<select
-							id="note-entry"
-							value={entryId}
-							onChange={(e) => setEntryId(e.target.value)}
-							className="text-sm border rounded px-2 py-1 bg-background"
-						>
-							<option value="">None</option>
-							{entries.map((entry, idx) => (
-								<option key={entry.id} value={entry.id}>
-									Entry #{entries.length - idx} ({entry.status})
-								</option>
-							))}
-						</select>
-					</div>
-				)}
-
-				{segments.length > 0 && (
-					<div className="flex items-center gap-2">
-						<label htmlFor="note-segment" className="text-muted-foreground">
-							Segment:
-						</label>
-						<select
-							id="note-segment"
-							value={segmentId}
-							onChange={(e) => setSegmentId(e.target.value)}
-							className="text-sm border rounded px-2 py-1 bg-background"
-						>
-							<option value="">None</option>
-							{segments.map((segment) => (
-								<option key={segment.id} value={segment.id}>
-									{segment.orderIndex + 1}. {segment.title || `Segment ${segment.orderIndex + 1}`}
-								</option>
-							))}
-						</select>
-					</div>
-				)}
+			<div className="space-y-2">
+				<Label htmlFor="note-tag" className="text-sm text-muted-foreground">
+					Tag (optional)
+				</Label>
+				<Input
+					id="note-tag"
+					value={tag}
+					onChange={(e) => setTag(e.target.value)}
+					placeholder="e.g., chapter one, episode 5"
+					className="text-sm"
+				/>
 			</div>
 
 			<div className="flex gap-2">
@@ -122,6 +76,7 @@ export function AddNoteForm({ itemId, entries, segments }: AddNoteFormProps) {
 					onClick={() => {
 						setIsOpen(false);
 						setBody("");
+						setTag("");
 					}}
 				>
 					Cancel

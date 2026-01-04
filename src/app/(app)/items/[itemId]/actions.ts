@@ -141,8 +141,7 @@ export async function createNote(formData: FormData) {
 	}
 
 	const itemId = formData.get("itemId") as string;
-	const entryId = formData.get("entryId") as string | null;
-	const segmentId = formData.get("segmentId") as string | null;
+	const tag = formData.get("tag") as string | null;
 	const body = formData.get("body") as string;
 
 	if (!itemId || !body?.trim()) {
@@ -162,8 +161,7 @@ export async function createNote(formData: FormData) {
 		id: nanoid(),
 		userId: session.user.id,
 		itemId,
-		entryId: entryId || undefined,
-		segmentId: segmentId || undefined,
+		tag: tag?.trim() || undefined,
 		body: body.trim(),
 	});
 

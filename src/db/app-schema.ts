@@ -144,7 +144,7 @@ export const mediaSegment = sqliteTable(
 	],
 );
 
-// Notes - reflections attached to items, entries, or segments
+// Notes - reflections attached to items with optional tags
 export const note = sqliteTable(
 	"note",
 	{
@@ -159,6 +159,7 @@ export const note = sqliteTable(
 		segmentId: text("segment_id").references(() => mediaSegment.id, {
 			onDelete: "set null",
 		}),
+		tag: text("tag"), // Optional tag like "chapter one", "episode 5", etc.
 		body: text("body").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" })
 			.default(sql`(cast(unixepoch('subsecond') * 1000 as integer))`)
