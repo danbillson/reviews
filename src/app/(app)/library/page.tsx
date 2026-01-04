@@ -27,6 +27,14 @@ export default async function LibraryPage() {
 		orderBy: (mediaItem, { desc }) => [desc(mediaItem.updatedAt)],
 	});
 
+	// Separate in-progress items (status "started")
+	const inProgressItems = items.filter(
+		(item) => item.entries[0]?.status === "started",
+	);
+	const otherItems = items.filter(
+		(item) => item.entries[0]?.status !== "started",
+	);
+
 	return (
 		<div className="min-h-screen bg-background">
 			<header className="border-b border-border sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
@@ -60,41 +68,91 @@ export default async function LibraryPage() {
 						</Link>
 					</div>
 				) : (
-					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-						{items.map((item) => (
-							<Link
-								key={item.id}
-								href={`/items/${item.id}`}
-								className="group block"
-							>
-								<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2">
-									{item.imageUrl ? (
-										<img
-											src={item.imageUrl}
-											alt=""
-											className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-										/>
-									) : (
-										<div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
-											{item.title}
-										</div>
-									)}
+					<>
+						{inProgressItems.length > 0 && (
+							<div className="mb-8">
+								<h3 className="text-xl font-semibold mb-4">In Progress</h3>
+								<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+									{inProgressItems.map((item) => (
+										<Link
+											key={item.id}
+											href={`/items/${item.id}`}
+											className="group block"
+										>
+											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2">
+												{item.imageUrl ? (
+													<img
+														src={item.imageUrl}
+														alt=""
+														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+													/>
+												) : (
+													<div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
+														{item.title}
+													</div>
+												)}
+											</div>
+											<h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+												{item.title}
+											</h3>
+											<div className="flex items-center gap-2 text-xs text-muted-foreground">
+												<span>{item.type.name}</span>
+												{item.entries[0] && (
+													<>
+														<span>·</span>
+														<span className="capitalize">{item.entries[0].status}</span>
+													</>
+												)}
+											</div>
+										</Link>
+									))}
 								</div>
-								<h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
-									{item.title}
-								</h3>
-								<div className="flex items-center gap-2 text-xs text-muted-foreground">
-									<span>{item.type.name}</span>
-									{item.entries[0] && (
-										<>
-											<span>·</span>
-											<span className="capitalize">{item.entries[0].status}</span>
-										</>
-									)}
+							</div>
+						)}
+
+						{otherItems.length > 0 && (
+							<div>
+								{inProgressItems.length > 0 && (
+									<h3 className="text-xl font-semibold mb-4">All Items</h3>
+								)}
+								<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+									{otherItems.map((item) => (
+										<Link
+											key={item.id}
+											href={`/items/${item.id}`}
+											className="group block"
+										>
+											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2">
+												{item.imageUrl ? (
+													<img
+														src={item.imageUrl}
+														alt=""
+														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+													/>
+												) : (
+													<div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
+														{item.title}
+													</div>
+												)}
+											</div>
+											<h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
+												{item.title}
+											</h3>
+											<div className="flex items-center gap-2 text-xs text-muted-foreground">
+												<span>{item.type.name}</span>
+												{item.entries[0] && (
+													<>
+														<span>·</span>
+														<span className="capitalize">{item.entries[0].status}</span>
+													</>
+												)}
+											</div>
+										</Link>
+									))}
 								</div>
-							</Link>
-						))}
-					</div>
+							</div>
+						)}
+					</>
 				)}
 			</main>
 		</div>
