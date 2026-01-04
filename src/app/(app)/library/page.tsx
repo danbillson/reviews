@@ -1,32 +1,18 @@
 import { auth } from "@/lib/auth";
 import { db } from "@/db/client";
-import { mediaItem, mediaType, entry } from "@/db/schema";
+import { mediaItem, entry } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LibraryFilters } from "./library-filters";
-import { signOut } from "@/lib/auth-client";
 import { SignOutButton } from "./sign-out-button";
 
-export default async function LibraryPage({
-	searchParams,
-}: {
-	searchParams: Promise<{ type?: string; status?: string }>;
-}) {
+export default async function LibraryPage() {
 	const session = await auth.api.getSession({
 		headers: await headers(),
 	});
 
 	if (!session) return null;
-
-	const params = await searchParams;
-
-	// Get user's media types for filtering
-	const types = await db.query.mediaType.findMany({
-		where: eq(mediaType.userId, session.user.id),
-		orderBy: (mediaType, { asc }) => [asc(mediaType.name)],
-	});
 
 	// Get user's items with their latest entry
 	const items = await db.query.mediaItem.findMany({
@@ -40,17 +26,6 @@ export default async function LibraryPage({
 		},
 		orderBy: (mediaItem, { desc }) => [desc(mediaItem.updatedAt)],
 	});
-
-	// Apply filters
-	let filteredItems = items;
-	if (params.type) {
-		filteredItems = filteredItems.filter((item) => item.type.slug === params.type);
-	}
-	if (params.status) {
-		filteredItems = filteredItems.filter(
-			(item) => item.entries[0]?.status === params.status,
-		);
-	}
 
 	return (
 		<div className="min-h-screen bg-background">
@@ -75,24 +50,18 @@ export default async function LibraryPage({
 					</Link>
 				</div>
 
-				<LibraryFilters types={types} />
-
-				{filteredItems.length === 0 ? (
+				{items.length === 0 ? (
 					<div className="text-center py-12">
 						<p className="text-muted-foreground mb-4">
-							{items.length === 0
-								? "Your library is empty. Add some media to get started."
-								: "No items match your filters."}
+							Your library is empty. Add some media to get started.
 						</p>
-						{items.length === 0 && (
-							<Link href="/items/new">
-								<Button variant="outline">Add your first item</Button>
-							</Link>
-						)}
+						<Link href="/items/new">
+							<Button variant="outline">Add your first item</Button>
+						</Link>
 					</div>
 				) : (
 					<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-						{filteredItems.map((item) => (
+						{items.map((item) => (
 							<Link
 								key={item.id}
 								href={`/items/${item.id}`}
