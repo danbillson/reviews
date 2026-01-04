@@ -5,7 +5,32 @@ import { eq, desc } from "drizzle-orm";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { SignOutButton } from "./sign-out-button";
+import { cn } from "@/lib/utils";
+
+// Color palette for media type badges
+const MEDIA_TYPE_COLORS = [
+	"bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+	"bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+	"bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+	"bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200",
+	"bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200",
+	"bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+	"bg-cyan-100 text-cyan-800 dark:bg-cyan-900 dark:text-cyan-200",
+	"bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+	"bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+	"bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200",
+] as const;
+
+// Get a consistent color for a media type based on its slug
+function getMediaTypeColor(slug: string): string {
+	let hash = 0;
+	for (let i = 0; i < slug.length; i++) {
+		hash = ((hash << 5) - hash + slug.charCodeAt(i)) & 0xffffffff;
+	}
+	return MEDIA_TYPE_COLORS[Math.abs(hash) % MEDIA_TYPE_COLORS.length] || "";
+}
 
 export default async function LibraryPage() {
 	const session = await auth.api.getSession({
@@ -79,12 +104,12 @@ export default async function LibraryPage() {
 											href={`/items/${item.id}`}
 											className="group block"
 										>
-											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2">
+											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2 shadow-sm">
 												{item.imageUrl ? (
 													<img
 														src={item.imageUrl}
 														alt=""
-														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+														className="w-full h-full object-cover"
 													/>
 												) : (
 													<div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
@@ -95,14 +120,16 @@ export default async function LibraryPage() {
 											<h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
 												{item.title}
 											</h3>
-											<div className="flex items-center gap-2 text-xs text-muted-foreground">
-												<span>{item.type.name}</span>
-												{item.entries[0] && (
-													<>
-														<span>·</span>
-														<span className="capitalize">{item.entries[0].status}</span>
-													</>
-												)}
+											<div className="flex items-center gap-2 text-xs">
+												<Badge
+													variant="outline"
+													className={cn(
+														"border-0 text-xs",
+														getMediaTypeColor(item.type.slug),
+													)}
+												>
+													{item.type.name}
+												</Badge>
 											</div>
 										</Link>
 									))}
@@ -122,12 +149,12 @@ export default async function LibraryPage() {
 											href={`/items/${item.id}`}
 											className="group block"
 										>
-											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2">
+											<div className="aspect-[2/3] bg-muted rounded-lg overflow-hidden mb-2 shadow-sm">
 												{item.imageUrl ? (
 													<img
 														src={item.imageUrl}
 														alt=""
-														className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+														className="w-full h-full object-cover"
 													/>
 												) : (
 													<div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs p-2 text-center">
@@ -138,14 +165,16 @@ export default async function LibraryPage() {
 											<h3 className="font-medium text-sm truncate group-hover:text-primary transition-colors">
 												{item.title}
 											</h3>
-											<div className="flex items-center gap-2 text-xs text-muted-foreground">
-												<span>{item.type.name}</span>
-												{item.entries[0] && (
-													<>
-														<span>·</span>
-														<span className="capitalize">{item.entries[0].status}</span>
-													</>
-												)}
+											<div className="flex items-center gap-2 text-xs">
+												<Badge
+													variant="outline"
+													className={cn(
+														"border-0 text-xs",
+														getMediaTypeColor(item.type.slug),
+													)}
+												>
+													{item.type.name}
+												</Badge>
 											</div>
 										</Link>
 									))}
