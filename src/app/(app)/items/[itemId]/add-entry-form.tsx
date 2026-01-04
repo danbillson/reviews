@@ -6,38 +6,38 @@ import { createEntry } from "./actions";
 import type { EntryStatus } from "@/db/app-schema";
 
 const STATUSES: { value: EntryStatus; label: string }[] = [
-	{ value: "planned", label: "Plan to consume" },
-	{ value: "started", label: "Started" },
-	{ value: "finished", label: "Finished" },
-	{ value: "dropped", label: "Dropped" },
+  { value: "planned", label: "Plan to consume" },
+  { value: "started", label: "Started" },
+  { value: "finished", label: "Finished" },
+  { value: "dropped", label: "Dropped" },
 ];
 
 export function AddEntryForm({ itemId }: { itemId: string }) {
-	const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
-	const handleCreate = (status: EntryStatus) => {
-		const formData = new FormData();
-		formData.set("itemId", itemId);
-		formData.set("status", status);
+  const handleCreate = (status: EntryStatus) => {
+    const formData = new FormData();
+    formData.set("itemId", itemId);
+    formData.set("status", status);
 
-		startTransition(() => {
-			createEntry(formData);
-		});
-	};
+    startTransition(() => {
+      createEntry(formData);
+    });
+  };
 
-	return (
-		<div className="flex flex-wrap gap-2">
-			{STATUSES.map((status) => (
-				<Button
-					key={status.value}
-					variant="outline"
-					size="sm"
-					onClick={() => handleCreate(status.value)}
-					disabled={isPending}
-				>
-					+ {status.label}
-				</Button>
-			))}
-		</div>
-	);
+  return (
+    <div className="flex flex-wrap gap-2">
+      {STATUSES.map((status) => (
+        <Button
+          key={status.value}
+          variant="outline"
+          size="sm"
+          onClick={() => handleCreate(status.value)}
+          disabled={isPending}
+        >
+          + {status.label}
+        </Button>
+      ))}
+    </div>
+  );
 }
