@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { ProviderSearchResult } from "@/lib/providers/types";
-import { createManualItem, importItem } from "./actions";
+import { createManualItem } from "./actions";
 
 interface MediaType {
   id: string;
@@ -49,17 +50,6 @@ export function NewItemForm({ types }: NewItemFormProps) {
     }
   };
 
-  const handleImport = (result: ProviderSearchResult) => {
-    if (!selectedType) return;
-
-    const formData = new FormData();
-    formData.set("typeId", selectedType.id);
-    formData.set("externalId", result.externalId);
-
-    startTransition(() => {
-      importItem(formData);
-    });
-  };
 
   if (types.length === 0) {
     return (
@@ -188,47 +178,40 @@ export function NewItemForm({ types }: NewItemFormProps) {
           {searchResults.length > 0 && (
             <div className="space-y-3">
               {searchResults.map((result) => (
-                <Card
+                <Link
                   key={result.externalId}
-                  className="cursor-pointer hover:bg-accent/50 transition-colors"
-                  onClick={() => handleImport(result)}
+                  href={`/items/preview/${selectedType.id}/${encodeURIComponent(result.externalId)}`}
                 >
-                  <CardContent className="p-4 flex gap-4">
-                    {result.imageUrl && (
-                      <img
-                        src={result.imageUrl}
-                        alt=""
-                        className="w-16 h-24 object-fit flex-shrink-0"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-medium truncate">{result.title}</h3>
-                      {result.subtitle && (
-                        <p className="text-sm text-muted-foreground truncate">
-                          {result.subtitle}
-                        </p>
+                  <Card className="cursor-pointer hover:bg-accent/50 transition-colors">
+                    <CardContent className="p-4 flex gap-4">
+                      {result.imageUrl && (
+                        <img
+                          src={result.imageUrl}
+                          alt=""
+                          className="w-16 h-24 object-fit flex-shrink-0"
+                        />
                       )}
-                      {result.year && (
-                        <p className="text-sm text-muted-foreground">
-                          {result.year}
-                        </p>
-                      )}
-                      {result.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                          {result.description}
-                        </p>
-                      )}
-                    </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="flex-shrink-0 self-center"
-                      disabled={isPending}
-                    >
-                      {isPending ? "Adding..." : "Add"}
-                    </Button>
-                  </CardContent>
-                </Card>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium truncate">{result.title}</h3>
+                        {result.subtitle && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            {result.subtitle}
+                          </p>
+                        )}
+                        {result.year && (
+                          <p className="text-sm text-muted-foreground">
+                            {result.year}
+                          </p>
+                        )}
+                        {result.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                            {result.description}
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           )}
